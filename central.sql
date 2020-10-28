@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 26-10-2020 a las 01:34:12
+-- Tiempo de generación: 28-10-2020 a las 04:32:56
 -- Versión del servidor: 10.4.14-MariaDB
 -- Versión de PHP: 7.4.10
 
@@ -58,7 +58,7 @@ CREATE TABLE `empleados` (
 
 INSERT INTO `empleados` (`id_empleado`, `ci_empleado`, `nomb_empleado`, `privilegios`, `numventas`, `Fecha_registro`, `Fecha_ultima_sesion`, `contraseña`) VALUES
 (1, 27511125, 'dan', 'admin', 0, '2020-10-20 00:17:13', '2020-10-20 00:17:13', '123dan'),
-(2, 335689, 'lusi', 'normal', 0, '2020-10-23 20:13:05', '2020-10-23 20:13:05', '321');
+(3, 335689, 'lusi', 'normal', 0, '2020-10-27 16:57:16', '2020-10-27 16:57:16', '321');
 
 -- --------------------------------------------------------
 
@@ -71,8 +71,18 @@ CREATE TABLE `items` (
   `id_producto` int(11) NOT NULL,
   `fecha_registro` datetime NOT NULL,
   `fecha_expedicion` datetime NOT NULL,
-  `estado` varchar(30) NOT NULL
+  `estado` varchar(30) NOT NULL,
+  `cantidad` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `items`
+--
+
+INSERT INTO `items` (`Codigo_items`, `id_producto`, `fecha_registro`, `fecha_expedicion`, `estado`, `cantidad`) VALUES
+(568984, 2020, '2020-12-31 00:00:00', '0000-00-00 00:00:00', '7', 1),
+(6565656, 1, '2020-10-27 22:38:47', '2020-10-31 00:00:00', 'disponible', 8),
+(123456123, 2020, '2020-10-27 20:14:12', '0000-00-00 00:00:00', '9', 1);
 
 -- --------------------------------------------------------
 
@@ -115,6 +125,14 @@ CREATE TABLE `producto` (
   `precio` float NOT NULL,
   `Clasificacion` varchar(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `producto`
+--
+
+INSERT INTO `producto` (`id_producto`, `Nomb_producto`, `disponibilidad`, `precio`, `Clasificacion`) VALUES
+(1, 'Coca-cola 2l', 25, 45.5, 'Bebidas'),
+(2, 'Mayonesa Mavesa 250Ml', 0, 12.5, 'Salsas y encurtidos');
 
 -- --------------------------------------------------------
 
@@ -193,7 +211,7 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT de la tabla `empleados`
 --
 ALTER TABLE `empleados`
-  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `movitems`
@@ -211,7 +229,7 @@ ALTER TABLE `opeinventario`
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`

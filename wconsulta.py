@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 from sql import alluser, suser
 from scroll import ScrollableFrame
+from framemod import framemod
 
 class wconsulta():
     def __init__(self):
@@ -50,7 +51,7 @@ class wconsulta():
         self.marco=[]
         i=0
         for per in lista:
-            self.marco.append(Frame(self.framet.scrollable_frame, width=750, height=60, bg="#DB7093"))
+            self.marco.append(framemod(self.framet.scrollable_frame, per[0],width=750, height=60, bg="#DB7093"))
             self.marco[i].pack()
             self.marco[i].bind("<Button-1>", self.allinfo)
             self.id =Label(self.marco[i], text=per[0], fg="white")
@@ -66,7 +67,7 @@ class wconsulta():
             self.ci.config(bg="#DB7093")
             self.priv.config(bg="#DB7093")
             self.marco[i].bind("<Button-1>", self.allinfo)
-            if per[0] % 2 == 0:
+            if i % 2 == 0:
                 self.marco[i].config(bg="#C40233")
                 self.id.config(bg="#C40233")
                 self.nom.config(bg="#C40233")
@@ -83,8 +84,8 @@ class wconsulta():
 
     def allinfo(self,event):
         caller= event.widget
-        pos=self.marco.index(caller)
-        print("Se abre nueva ventana con la id :"+str(pos+1))
+        pos=caller.id
+        print("Se abre nueva ventana con la id :"+str(pos))
         
 
 

@@ -5,8 +5,11 @@ from datetime import datetime
 def run():
     # newuser("lusi",335689,"normal","321")
     login(335689,"321")
-    print(suser("Nombre","da"))
-    print(infouser(1))
+    # newproduct("Coca-cola 2l",45.5,"Bebidas")
+    # additem(123456123,"Coca-cola 2l",datetime.now(),9)
+
+
+# Acciones para la tabla de empleados
 
 def alluser():
     lista=[]
@@ -48,9 +51,6 @@ def suser(tipo,consu):
            lista.append(list2)
     return lista 
 
-
-
-
 def newuser(nombre,cedula,privi,contra):
     now = datetime.now()
     nuevo = empleados(cedula,nombre,privi,0,now,now,contra)
@@ -68,6 +68,30 @@ def login(user,passw):
         print("contraseña correcta")
     else:
         print("contraseña incorrecta")
+
+
+# Acciones de la tabla productos e items
+def newproduct(nomb,precio,clas):
+    nuevo = producto(nomb,0,precio,clas)
+    config.con.add(nuevo)
+    config.con.commit()
+
+def allproduct():
+    lista=[]
+    for pro in config.con.query(producto).all():
+        lista.append(pro.Nomb_producto)
+    return lista
+
+def additem(cod,nom,fecha,cant):
+    produ = config.con.query(producto).filter_by(Nomb_producto=nom).first() 
+    now = datetime.now()
+    nuevo = items(cod, produ.id_producto, now, fecha, "disponible", cant)
+    config.con.add(nuevo)
+    produ.disponibilidad = produ.disponibilidad + cant
+    config.con.commit()
+
+
+    
 
             
 

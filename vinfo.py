@@ -89,7 +89,6 @@ class vinfo():
 
 def main():
     mi_app = vinfo(2)
-    vinfo.id = 2
     return 0
 
 if __name__ == '__main__':

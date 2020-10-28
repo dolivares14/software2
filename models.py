@@ -81,13 +81,15 @@ class items(config.base):
     fecha_registro = Column(DateTime, nullable=False)
     fecha_expedicion = Column(DateTime, nullable=False)
     estado = Column(String(30), nullable=False)
+    cantidad = Column(Integer,nullable=False)
 
-    def __init__(self, Codigo_items, id_producto, fecha_registro, fecha_expedicion, estado):
+    def __init__(self, Codigo_items, id_producto, fecha_registro, fecha_expedicion, estado,cantidad):
         self.Codigo_items= Codigo_items
         self.id_producto = id_producto
         self.fecha_registro = fecha_registro
         self.fecha_expedicion = fecha_expedicion
         self.estado = estado
+        self.cantidad = cantidad
     
     def __repr__(self):
         return f'items({self.Codigo_items}, {self.id_producto}, {self.fecha_registro}, {self.fecha_expedicion}, {self.estado})'
@@ -106,8 +108,7 @@ class producto(config.base):
     precio = Column(Float, nullable=False)
     Clasificacion = Column(String(20), nullable=False)
 
-    def __init__(self, id_producto, Nomb_producto, disponibilidad, precio, Clasificacion ):
-        self.id_producto = id_producto
+    def __init__(self, Nomb_producto, disponibilidad, precio, Clasificacion ):
         self.Nomb_producto = Nomb_producto
         self.disponibilidad = disponibilidad
         self.precio = precio
