@@ -3,15 +3,16 @@ from tkinter import ttk
 from sql import alluser, suser
 from scroll import ScrollableFrame
 from framemod import framemod
+from userindi import userindi
 
-class wconsulta():
-    def __init__(self):
-        self.root = Tk()
-        self.root.resizable(0,0)
-        self.root.title("Consulta de usuario")
+class buser(Tk):
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.resizable(0,0)
+        self.title("Consulta de usuarios")
         
         
-        self.frameb= Frame(self.root)
+        self.frameb= Frame(self)
         self.frameb.pack()
         self.frameb.config(width=750,height=500)
         self.frameb.config(bg="white")
@@ -35,17 +36,18 @@ class wconsulta():
         self.text= Entry(self.frameb, width=30)
         self.text.place(x=420,y=25)
 
-        
-        every = alluser()
-        self.rellenar(every)
+        self.rellenar(alluser())
         
         
         self.bot = Button(self.frameb, width=10,height=1,text= "Aceptar", command= self.buscar)
         self.bot.place(x=640,y=25)
 
+        self.bot2 = Button(self.frameb, width=10,height=1,text= "Aceptar", command= self.buscar)
+        self.bot2.place(x=25,y=500)
+
         
 
-        self.root.mainloop()
+        self.mainloop()
 
     def rellenar(self,lista):
         self.marco=[]
@@ -85,13 +87,19 @@ class wconsulta():
     def allinfo(self,event):
         caller= event.widget
         pos=caller.id
-        print("Se abre nueva ventana con la id :"+str(pos))
+        nwin= userindi(self,pos)
+
+    def refresh(self):
+        for i in self.marco:
+            i.pack_forget()
+            i.destroy()
+        self.rellenar(alluser())
         
 
 
 
 def main():
-    mi_app = wconsulta()
+    mi_app = buser()
     return 0
 
 if __name__ == '__main__':

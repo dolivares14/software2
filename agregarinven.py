@@ -2,17 +2,18 @@ from tkinter import *
 from tkinter import ttk
 from calendario import Calendar
 from sql import allproduct, additem
+from agregarprodu import agregarprodu
 
-class agregarinven():
-    def __init__(self):
-        self.root = Tk()
-        self.root.resizable(0,0)
-        self.root.title("ingreso de items")
-        self.frameb = Frame(self.root, bg="white", width = 550, height=600)
+class agregarinven(Tk):
+    def __init__(self,*args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.resizable(0,0)
+        self.title("ingreso de items")
+        self.frameb = Frame(self, bg="white", width = 550, height=600)
         self.frameb.pack()
 
         self.tit = Label(self.frameb, text="Agregar elemento(s) al inventario", font=("Verdana",12),bg="white")
-        self.tit.place(x=110, y=40) 
+        self.tit.place(x=150, y=40) 
 
         self.lab1 = Label(self.frameb, text="Código de barras:",font=("Verdana",12),bg="white")
         self.lab1.place(x=55,y=120)
@@ -23,7 +24,7 @@ class agregarinven():
         self.lab2.place(x=55,y=180)
         self.comb= ttk.Combobox(self.frameb, width=25, height=10, state= "readonly", values=allproduct())
         self.comb.place(x=250, y=180)
-        self.but = Button(self.frameb, text="+ Nuevo")
+        self.but = Button(self.frameb, text="+ Nuevo", command=self.produ)
         self.but.place(x=430,y=180)
 
         self.lab3 = Label(self.frameb, text="Cantidad:",font=("Verdana",12),bg="white")
@@ -42,15 +43,18 @@ class agregarinven():
         self.bot2 = Button(self.frameb, text="Aceptar", command=self.nuevo)
         self.bot2.place(x=310,y=520)
 
-        self.root.mainloop()
+        self.mainloop()
 
     def nuevo(self):
         additem(int(self.cod.get()),self.comb.get(),self.cal.selection(),int(self.spin.get()))
         print("objeto añadido")
 
+    def produ(self):
+        nwin = agregarprodu(self)
 
-
-
+    def refresh(self):
+        self.comb.config(values=allproduct())
+        
 
         
 

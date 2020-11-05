@@ -2,12 +2,16 @@ from tkinter import *
 from sql import infouser, deluser
 
 
-class vinfo():
-    def __init__(self,id):
-        self.root = Tk()
-        self.root.resizable(0,0)
-        self.root.title("Consulta de usuario")
-        self.frameb = Frame(self.root, bg="white", width = 450, height=600)
+class userindi(Toplevel):
+    def __init__(self,parent,id,*args, **kwargs):
+        super().__init__(parent,*args, **kwargs)
+        self.resizable(0,0)
+        self.title("Consulta de usuario")
+        self.title("Informacion de producto")
+        self.parent= parent
+        self.protocol("WM_DELETE_WINDOW", self.regre)
+        self.parent.withdraw()
+        self.frameb = Frame(self, bg="white", width = 450, height=600)
         self.frameb.pack()
         self.id=id
         self.data(infouser(self.id))
@@ -49,19 +53,12 @@ class vinfo():
 
 
 
-        self.bot1 = Button(self.frameb, text="Regresar",width=10)
+        self.bot1 = Button(self.frameb, text="Regresar",width=10, command=self.regre)
         self.bot1.place(x=50,y=550) 
         
-        self.bot3 = Button(self.frameb, text="Eliminar",width=10, command=self.eli(id))
+        self.bot3 = Button(self.frameb, text="Eliminar",width=10, command=self.eli)
         self.bot3.place(x=250,y=550) 
 
-
-
-
-
-
-
-        self.root.mainloop()
 
     def data(self,datos):
         self.nom = Label(self.frameb, text=datos.nomb_empleado,font=("Verdana",12),bg="white")
@@ -81,15 +78,11 @@ class vinfo():
         self.con = Label(self.frameb, text=datos.contraseña,font=("Verdana",12),bg="white")
         self.con.place(x=240,y=480)
 
-    def eli(self,id):
-        deluser(id)
-        print("Se elimina, cierra la ventana y abre la anterior")
+    def eli(self):
+        deluser(self.id)
+        self.regre()
         
-
-
-def main():
-    mi_app = vinfo(2)
-    return 0
-
-if __name__ == '__main__':
-    main()
+    def regre(self):
+        self.destroy()
+        self.parent.refresh()
+        self.parent.deiconify()
