@@ -73,19 +73,13 @@ class produindi(Toplevel):
 
     def conf(self):
         modprodu(self.id,self.nom.get(),self.clas.get(),self.precio.get())
-        self.nom.config(state="disabled")
-        self.clas.config(state="disabled")
-        self.precio.config(state="disabled")
-        self.precio.placeholder = "Bs.S "+str(self.precio.get())
-        self.bot1.config(text="Regresar")
-        self.bot2.config(text="Modificar", command=self.mod)
         self.regre()
 
     def cancelar(self):
         self.nom.config(state="disabled")
         self.clas.config(state="disabled")
         self.precio.config(state="disabled")
-        self.bot1.config(text="Regresar")
+        self.bot1.config(text="Regresar",command=self.regre)
         self.bot2.config(text="Modificar", command=self.mod)
 
     def regre(self):

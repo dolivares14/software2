@@ -28,6 +28,7 @@ class agregarprodu(Toplevel):
         self.lab2.place(x=55,y=180)
         self.comb = ttk.Combobox(self.frameb,width=25, height=10, state= "readonly")
         self.comb["values"] = ["Limpieza","Enlatados","Bebidas","Refrigerados","Snacks","Panaderia","Salsas y encurtidos","Verduras,legumbres y frutas","Granos","Otros"] 
+        self.comb.set("Limpieza")
         self.comb.place(x=280,y=180)
 
         self.lab3 = Label(self.frameb, text="Precio:",font=("Verdana",12),bg="white")

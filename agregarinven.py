@@ -1,8 +1,9 @@
 from tkinter import *
 from tkinter import ttk
 from calendario import Calendar
-from sql import allproduct, additem
+from sql import allproduct, additem,regiope,movinv
 from agregarprodu import agregarprodu
+from tkinter import messagebox
 
 class agregarinven(Tk):
     def __init__(self,*args, **kwargs):
@@ -47,7 +48,13 @@ class agregarinven(Tk):
 
     def nuevo(self):
         additem(int(self.cod.get()),self.comb.get(),self.cal.selection(),int(self.spin.get()))
-        print("objeto añadido")
+        ope=regiope(4,"Registro de item")
+        movinv(self.cod.get(),ope,"Ingreso",int(self.spin.get()))
+        messagebox.showinfo("Operación Exitosa","EL item se ha registrado exitosamente")
+
+        
+        
+
 
     def produ(self):
         nwin = agregarprodu(self)

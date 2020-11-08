@@ -7,7 +7,6 @@ class userindi(Toplevel):
         super().__init__(parent,*args, **kwargs)
         self.resizable(0,0)
         self.title("Consulta de usuario")
-        self.title("Informacion de producto")
         self.parent= parent
         self.protocol("WM_DELETE_WINDOW", self.regre)
         self.parent.withdraw()

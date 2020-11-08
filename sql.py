@@ -100,7 +100,6 @@ def additem(cod,nom,fecha,cant):
     now = datetime.now()
     nuevo = items(cod, produ.id_producto, now, fecha, "disponible", cant)
     config.con.add(nuevo)
-    produ.disponibilidad = produ.disponibilidad + cant
     config.con.commit()
 
 # Muestra la tabla de productos
@@ -148,10 +147,10 @@ def sitem(tipo,consu):
             lista2=  [item.Codigo_items, produ.Nomb_producto,item.cantidad]
             lista.append(lista2)
     if tipo == "Nombre":
-        produ = config.con.query(producto).filter(producto.Nomb_producto.like(search)).first()
-        for item in config.con.query(items).filter(items.id_producto.like(produ.id_producto)).all():
-            lista2= [item.Codigo_items, produ.Nomb_producto,item.cantidad]
-            lista.append(lista2)
+        for produ in config.con.query(producto).filter(producto.Nomb_producto.like(search)).all():
+            for item in config.con.query(items).filter_by(id_producto=produ.id_producto).all():
+                lista2= [item.Codigo_items, produ.Nomb_producto,item.cantidad]
+                lista.append(lista2)
     return lista
 
 # Muestra la informacion completa de un item
@@ -180,7 +179,8 @@ def produforventa(codenv):
     produ = config.con.query(producto).filter_by(id_producto=data.id_producto).first()
     lista = [produ.Nomb_producto,produ.precio,data.cantidad]
     return lista 
-
+# def restprodu(id,cant):
+#     produ=config.con.query(producto).filter_by()
 
 
 
@@ -194,6 +194,191 @@ def scliente(ci):
         return False
     else:
         return True
+
+# agrega un cliente a la bdd
+def ncliente(nom,ci,dir):
+    nuevo= clientes(ci,nom,0,dir)
+    config.con.add(nuevo)
+    config.con.commit()
+
+# envia la info de un cliente por su cedula
+def infocliente(ci):
+    data = config.con.query(clientes).filter_by(ci_cliente=ci).first()
+    return data
+
+# Obtiene la id de un cliente
+def getidcliet(ci):
+    data = config.con.query(clientes).filter_by(ci_cliente=ci).first()
+    return data.id_cliente 
+
+# Envia la informacion de todos los clientes para la tabla
+def allclient():
+    lista = []
+    data = config.con.query(clientes).all()
+    for cli in data:
+        lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras]
+        lista.append(lista2)
+    return lista
+
+# Busca clientes por un query
+def qcliente(tipo,consu):
+    search= "%{}%".format(consu)
+    lista=[]
+    if tipo =="Cedula":
+        for cli in config.con.query(clientes).filter(clientes.ci_cliente.like(search)).all():
+           lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras]
+           lista.append(lista2)
+    if tipo =="Nombre":
+        for cli in config.con.query(clientes).filter(clientes.nomb_cliente.like(search)).all():
+           lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras]
+           lista.append(lista2)
+    return lista
+
+
+# Envia la informacion completa de un cliente
+def infoclient(idc):
+    data = config.con.query(clientes).filter_by(id_cliente=idc).first()
+    return data
+
+def modclient(id,nomb,ci,dire):
+    cli = config.con.query(clientes).get(id)
+    cli.nomb_cliente= nomb
+    cli.ci_cliente = ci
+    cli.direccion = dire
+    config.con.commit()
+
+# Termina de procesar una venta
+def proceventa(ide,idc,met,mont):
+    nuevo = ventas(ide,idc,met,mont)
+    config.con.add(nuevo)
+    emp=config.con.query(empleados).filter_by(id_empleado=ide).first()
+    emp.numventas += 1
+    cli=config.con.query(clientes).filter_by(id_cliente=idc).first()
+    cli.numbcompras += 1
+    config.con.commit()
+    return nuevo.nfactura
+
+def regiope(ide,accion):
+    nuevo = opeinventario(ide,accion,datetime.now())
+    config.con.add(nuevo)
+    config.con.commit()
+    return nuevo.id_ope
+
+def movinv(cod,idop,accion,cant):
+    it=config.con.query(items).filter_by(Codigo_items=cod).first()
+    nuevo = movitems(it.id_producto,0,idop,accion,cant)
+    config.con.add(nuevo)
+    config.con.commit()
+
+# Guarda el registro de movimientos de items durante una venta
+def movventa(cod,factu,cant):
+        it=config.con.query(items).filter_by(Codigo_items=cod).first()
+        nuevo = movitems(it.id_producto,factu,0,"Venta",cant)
+        config.con.add(nuevo)
+        config.con.commit()
+
+def allventa():
+    lista = []
+    data = config.con.query(ventas).all()
+    for ven in data:
+        cli = config.con.query(clientes).filter_by(id_cliente=ven.id_cliente).first()
+        emp = config.con.query(empleados).filter_by(id_empleado=ven.id_empleado).first()
+        lista2=[ven.nfactura,emp.ci_empleado,cli.ci_cliente,ven.tipopago,ven.monto]
+        lista.append(lista2)
+    return lista
+
+def sventa(tipo,consu):
+    search= "%{}%".format(consu)
+    lista=[]
+    if tipo =="CI Cliente":
+        for cli in config.con.query(clientes).filter(clientes.ci_cliente.like(search)).all():
+            for ven in config.con.query(ventas).filter_by(id_cliente=cli.id_cliente).all():
+                emp = config.con.query(empleados).filter_by(id_empleado=ven.id_empleado).first()
+                lista2= [ven.nfactura,emp.ci_empleado,cli.ci_cliente,ven.tipopago,ven.monto]
+                lista.append(lista2)
+    if tipo =="CI Empleado":
+        for emp in config.con.query(empleados).filter(empleados.ci_empleado.like(search)).all():
+            for ven in config.con.query(ventas).filter_by(id_empleado=emp.id_empleado).all():
+                cli = config.con.query(clientes).filter_by(id_cliente=ven.id_cliente).first()
+                lista2= [ven.nfactura,emp.ci_empleado,cli.ci_cliente,ven.tipopago,ven.monto]
+                lista.append(lista2)
+    if tipo =="N° de Factura":
+        for ven in config.con.query(ventas).filter(ventas.nfactura.like(search)).all():
+           cli = config.con.query(clientes).filter_by(id_cliente=ven.id_cliente).first()
+           emp = config.con.query(empleados).filter_by(id_empleado=ven.id_empleado).first()
+           lista2=[ven.nfactura,emp.ci_empleado,cli.ci_cliente,ven.tipopago,ven.monto]
+           lista.append(lista2)
+    if tipo =="Metodo":
+        for ven in config.con.query(ventas).filter(ventas.tipopago.like(search)).all():
+           cli = config.con.query(clientes).filter_by(id_cliente=ven.id_cliente).first()
+           emp = config.con.query(empleados).filter_by(id_empleado=ven.id_empleado).first()
+           lista2=[ven.nfactura,emp.ci_empleado,cli.ci_cliente,ven.tipopago,ven.monto]
+           lista.append(lista2)
+    return lista
+
+def allmov():
+    lista = []
+    data= config.con.query(movitems).all()
+    for mov in data:
+        produ= config.con.query(producto).filter_by(id_producto=mov.id_producto).first()
+        lista2=[mov.idmov,produ.Nomb_producto,mov.n_factura,mov.id_ope,mov.accion,mov.cantidad]
+        lista.append(lista2)
+    return lista
+
+def smov(tipo,consu):
+    search= "%{}%".format(consu)
+    lista=[]
+    if tipo =="ID":
+        for mov in config.con.query(movitems).filter(movitems.idmov.like(search)).all():
+            produ= config.con.query(producto).filter_by(id_producto=mov.id_producto).first()
+            lista2=[mov.idmov,produ.Nomb_producto,mov.n_factura,mov.id_ope,mov.accion,mov.cantidad]
+            lista.append(lista2)
+    if tipo =="Nombre de producto":
+        for produ in config.con.query(producto).filter(producto.Nomb_producto.like(search)).all():
+            for mov in config.con.query(movitems).filter_by(id_producto=produ.id_producto).all():
+                lista2=[mov.idmov,produ.Nomb_producto,mov.n_factura,mov.id_ope,mov.accion,mov.cantidad]
+                lista.append(lista2)
+    if tipo =="Acción":
+        for mov in config.con.query(movitems).filter(movitems.accion.like(search)).all():
+            produ= config.con.query(producto).filter_by(id_producto=mov.id_producto).first()
+            lista2=[mov.idmov,produ.Nomb_producto,mov.n_factura,mov.id_ope,mov.accion,mov.cantidad]
+            lista.append(lista2)
+    return lista
+
+
+def allope():
+    lista = []
+    data = config.con.query(opeinventario).all()
+    for ope in data:
+        emp = config.con.query(empleados).filter_by(id_empleado=ope.id_empleado).first()
+        lista2=[ope.id_ope,emp.ci_empleado,ope.descripcion,ope.hora_ope]
+        lista.append(lista2)
+    return lista
+
+def sope(tipo,consu):
+    search= "%{}%".format(consu)
+    lista=[]
+    if tipo =="ID":
+       for ope in config.con.query(opeinventario).filter(opeinventario.id_ope.like(search)).all():
+           emp = config.con.query(empleados).filter_by(id_empleado=ope.id_empleado).first()
+           lista2=[ope.id_ope,emp.ci_empleado,ope.descripcion,ope.hora_ope]
+           lista.append(lista2)
+    if tipo =="CI Empleado":
+        for emp in config.con.query(empleados).filter(empleados.ci_empleado.like(search)).all():
+            for ope in config.con.query(opeinventario).filter_by(id_empleado=emp.id_empleado).all():
+                lista2=[ope.id_ope,emp.ci_empleado,ope.descripcion,ope.hora_ope]
+                lista.append(lista2)
+    if tipo=="Descripción":
+        for ope in config.con.query(opeinventario).filter(opeinventario.descripcion.like(search)).all():
+           emp = config.con.query(empleados).filter_by(id_empleado=ope.id_empleado).first()
+           lista2=[ope.id_ope,emp.ci_empleado,ope.descripcion,ope.hora_ope]
+           lista.append(lista2)
+    return lista
+
+        
+
+
+
 
             
 

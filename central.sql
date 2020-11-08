@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 28-10-2020 a las 04:32:56
+-- Tiempo de generación: 08-11-2020 a las 02:18:13
 -- Versión del servidor: 10.4.14-MariaDB
 -- Versión de PHP: 7.4.10
 
@@ -35,6 +35,16 @@ CREATE TABLE `clientes` (
   `direccion` varchar(80) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Volcado de datos para la tabla `clientes`
+--
+
+INSERT INTO `clientes` (`id_cliente`, `ci_cliente`, `nomb_cliente`, `numbcompras`, `direccion`) VALUES
+(1, 123456, 'daniel', 0, 'La limpia dr Portillo\n'),
+(2, 5689997, 'Luis Ortega', 0, 'Caracas\n'),
+(3, 369888, 'Felipe', 0, 'adasdasasdasdadsa\n'),
+(4, 69669669, 'Gonzalo Fernandez', 0, '\n');
+
 -- --------------------------------------------------------
 
 --
@@ -57,8 +67,7 @@ CREATE TABLE `empleados` (
 --
 
 INSERT INTO `empleados` (`id_empleado`, `ci_empleado`, `nomb_empleado`, `privilegios`, `numventas`, `Fecha_registro`, `Fecha_ultima_sesion`, `contraseña`) VALUES
-(1, 27511125, 'dan', 'admin', 0, '2020-10-20 00:17:13', '2020-10-20 00:17:13', '123dan'),
-(3, 335689, 'lusi', 'normal', 0, '2020-10-27 16:57:16', '2020-10-27 16:57:16', '321');
+(4, 335689, 'lusi', 'normal', 0, '2020-11-04 19:47:58', '2020-11-04 19:47:58', '321');
 
 -- --------------------------------------------------------
 
@@ -80,9 +89,25 @@ CREATE TABLE `items` (
 --
 
 INSERT INTO `items` (`Codigo_items`, `id_producto`, `fecha_registro`, `fecha_expedicion`, `estado`, `cantidad`) VALUES
-(568984, 2020, '2020-12-31 00:00:00', '0000-00-00 00:00:00', '7', 1),
 (6565656, 1, '2020-10-27 22:38:47', '2020-10-31 00:00:00', 'disponible', 8),
-(123456123, 2020, '2020-10-27 20:14:12', '0000-00-00 00:00:00', '9', 1);
+(123456123, 2, '2020-10-27 20:14:12', '0000-00-00 00:00:00', '9', 1),
+(565689897, 3, '2020-11-07 17:52:34', '2021-02-26 00:00:00', 'disponible', 32);
+
+--
+-- Disparadores `items`
+--
+DELIMITER $$
+CREATE TRIGGER `addprodu` AFTER INSERT ON `items` FOR EACH ROW UPDATE producto SET disponibilidad=disponibilidad + NEW.cantidad WHERE id_producto=new.id_producto
+$$
+DELIMITER ;
+DELIMITER $$
+CREATE TRIGGER `restprodu` AFTER UPDATE ON `items` FOR EACH ROW IF old.cantidad > new.cantidad THEN
+UPDATE producto SET disponibilidad = disponibilidad - cantidad WHERE id_producto = new.id_producto;
+ELSE
+UPDATE producto SET disponibilidad = disponibilidad + cantidad WHERE id_producto = new.id_producto;
+END IF
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -99,6 +124,17 @@ CREATE TABLE `movitems` (
   `cantidad` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--
+-- Volcado de datos para la tabla `movitems`
+--
+
+INSERT INTO `movitems` (`idmov`, `id_producto`, `n_factura`, `id_ope`, `accion`, `cantidad`) VALUES
+(1, 2, 5, 0, 'Venta', 55),
+(2, 2, 5, 0, 'Venta', 55),
+(3, 2, 3, 0, 'Venta', 3),
+(4, 2, 3, 0, 'Venta', 2),
+(5, 3, 0, 1, 'Ingreso', 32);
+
 -- --------------------------------------------------------
 
 --
@@ -111,6 +147,13 @@ CREATE TABLE `opeinventario` (
   `descripcion` varchar(100) NOT NULL,
   `hora_ope` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `opeinventario`
+--
+
+INSERT INTO `opeinventario` (`id_ope`, `id_empleado`, `descripcion`, `hora_ope`) VALUES
+(1, 4, 'Registro de item', '2020-11-07 17:52:36');
 
 -- --------------------------------------------------------
 
@@ -131,8 +174,9 @@ CREATE TABLE `producto` (
 --
 
 INSERT INTO `producto` (`id_producto`, `Nomb_producto`, `disponibilidad`, `precio`, `Clasificacion`) VALUES
-(1, 'Coca-cola 2l', 25, 45.5, 'Bebidas'),
-(2, 'Mayonesa Mavesa 250Ml', 0, 12.5, 'Salsas y encurtidos');
+(1, 'Pepsi 1.5L', 25, 0, 'Snacks'),
+(2, 'Mayonesa Mavesa 250Ml', 0, 12.5, 'Salsas y encurtidos'),
+(3, 'Helado EFE chocolate intenso', 32, 50, 'Refrigerados');
 
 -- --------------------------------------------------------
 
@@ -147,6 +191,15 @@ CREATE TABLE `ventas` (
   `tipopago` varchar(20) NOT NULL,
   `monto` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Volcado de datos para la tabla `ventas`
+--
+
+INSERT INTO `ventas` (`nfactura`, `id_empleado`, `id_cliente`, `tipopago`, `monto`) VALUES
+(1, 4, 1, 'Debito', 25),
+(2, 4, 1, 'Debito', 50),
+(3, 4, 1, 'Debito', 62.5);
 
 --
 -- Índices para tablas volcadas
@@ -205,37 +258,37 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `empleados`
 --
 ALTER TABLE `empleados`
-  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `movitems`
 --
 ALTER TABLE `movitems`
-  MODIFY `idmov` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `idmov` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `opeinventario`
 --
 ALTER TABLE `opeinventario`
-  MODIFY `id_ope` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_ope` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `nfactura` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `nfactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

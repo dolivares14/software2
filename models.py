@@ -36,8 +36,7 @@ class clientes(config.base):
     numbcompras = Column(Integer, nullable=False)
     direccion = Column(String(80), nullable=False)
 
-    def __init__(self, id_cliente, ci_cliente, nomb_cliente, numbcompras, direccion):
-        self.id_cliente = id_cliente
+    def __init__(self,ci_cliente, nomb_cliente, numbcompras, direccion):
         self.ci_cliente = ci_cliente
         self.nomb_cliente = nomb_cliente
         self.numbcompras = numbcompras
@@ -59,8 +58,7 @@ class ventas(config.base):
     tipopago = Column(String(20), nullable=False)
     monto = Column(Float, nullable=False)
 
-    def __init__(self, nfactura, id_empleado, id_cliente, tipopago, monto):
-        self.nfactura = nfactura
+    def __init__(self, id_empleado, id_cliente, tipopago, monto):
         self.id_empleado = id_empleado
         self.id_cliente = id_cliente
         self.tipopago = tipopago
@@ -130,8 +128,7 @@ class opeinventario(config.base):
     descripcion = Column(String(100), nullable=False)
     hora_ope = Column(DateTime, nullable=False)
 
-    def __init__(self, id_ope, id_empleado, descripcion, hora_ope, numventas, Fecha_registro, Fecha_ultima_sesion, contraseña):
-        self.id_ope = id_ope
+    def __init__(self, id_empleado, descripcion, hora_ope):
         self.id_empleado = id_empleado
         self.descripcion = descripcion
         self.hora_ope = hora_ope
@@ -153,8 +150,7 @@ class movitems(config.base):
     accion = Column(String(20), nullable=False)
     cantidad = Column(Integer, nullable=False)
 
-    def __init__(self, idmov, id_producto, n_factura, privilegios, id_ope, accion, cantidad):
-        self.idmov = idmov
+    def __init__(self,id_producto, n_factura, id_ope, accion, cantidad):
         self.id_producto = id_producto
         self.n_factura = n_factura
         self.id_ope = id_ope

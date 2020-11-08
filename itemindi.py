@@ -43,8 +43,8 @@ class itemindi(Toplevel):
         self.bot1 = Button(self.frameb, text="Regresar",command=self.regre)
         self.bot1.place(x=50,y=450) 
         
-        # self.bot3 = Button(self.frameb, text="Retirar elementos")
-        # self.bot3.place(x=250,y=550) no se si colocar este todavia
+        self.bot3 = Button(self.frameb, text="Retirar elementos")
+        self.bot3.place(x=250,y=450)
 
 
 
