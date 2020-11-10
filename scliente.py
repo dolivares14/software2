@@ -10,7 +10,7 @@ class bcliente(Toplevel):
         self.resizable(0,0)
         self.title("Consulta de cliente")
         self.parent = parent
-        self.protocol("WM_DELETE_WINDOW", self.regre)
+        # self.protocol("WM_DELETE_WINDOW", self.regre)
         self.parent.withdraw()
         self.frameb= Frame(self)
         self.frameb.pack()
@@ -24,14 +24,27 @@ class bcliente(Toplevel):
         self.ced= Entry(self.frameb)
         self.ced.place(x=90,y=100)
 
-        self.but= Button(self.frameb,text="Buscar",command=self.search)
+        self.but= Button(self.frameb,text="Buscar",command=self.val)
         self.but.place(x=130,y=150)
 
     def prose(self,nom,ci):
         self.destroy()
         self.parent.infoclient(ci,nom)
         self.parent.deiconify()
-        
+
+    def val(self):
+        if self.ced.get()=="":
+            messagebox.showerror("Error","El campo cedula esta vacio")
+            self.ced.delete(0,END)
+        elif len(self.ced.get()) < 7:
+            messagebox.showerror("Error","Una cedula puede tener minimo 7 dígitos")
+            self.ced.delete(0,END)
+        elif not self.ced.get().isdigit():
+            messagebox.showerror("Error","La cedula solo puede tener números")
+            self.ced.delete(0,END)
+        else:
+            self.search()
+
 
     def search(self):
         if scliente(self.ced.get()):

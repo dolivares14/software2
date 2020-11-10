@@ -1,8 +1,8 @@
 from tkinter import *
 from entryplaceholder import entryplaceholder
 from sql import infoprodu
-from tkinter import ttk
-from sql import modprodu
+from tkinter import ttk, messagebox
+from sql import modprodu,checkproduct
 
 class produindi(Toplevel):
     def __init__(self,parent,id,*args, **kwargs):
@@ -47,6 +47,38 @@ class produindi(Toplevel):
         self.bot2.place(x=300,y=400) 
 
 
+    def val(self):
+        if self.nom.get() == "" or self.cost.get() =="":
+            messagebox.showerror("Error","Uno o más campos estan vacio")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        elif len(self.nom.get()) < 5:
+            messagebox.showerror("Error","El nombre es demasiado corto")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        elif not self.es_flotante(self.cost.get()):
+            messagebox.showerror("Error","Solo se pueden ingresar valores numericos en el precio")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        elif float(self.cost.get()) <= 0:
+            messagebox.showerror("Error","El precio no puede ser igual o menor a cero")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        elif checkproduct(self.nom.get()):
+            messagebox.showerror("Error","El nombre del producto ya se encuentra registrado")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        else:
+            self.conf()
+
+    def es_flotante(self,variable):
+        try:
+            float(variable)
+            return True
+        except:
+            return False
+
+
     def data(self,datos):
         self.nom = entryplaceholder(self.frameb, placeholder=datos.Nomb_producto)
         self.nom.config(state="disabled",width=38)
@@ -57,9 +89,9 @@ class produindi(Toplevel):
         self.clas["values"] = ["Limpieza","Enlatados","Bebidas","Refrigerados","Snacks","Panaderia","Salsas y encurtidos","Verduras,legumbres y frutas","Granos","Otros"]
         self.clas.set(datos.Clasificacion)
         self.clas.place(x=240,y=230)
-        self.precio = entryplaceholder(self.frameb, placeholder="Bs.S "+str(datos.precio))
-        self.precio.config(state="disabled",width=38)
-        self.precio.place(x=240,y=280)
+        self.cost = entryplaceholder(self.frameb, placeholder="Bs.S "+str(datos.precio))
+        self.cost.config(state="disabled",width=38)
+        self.cost.place(x=240,y=280)
         self.disp = Label(self.frameb, text=datos.disponibilidad,font=("Verdana",12),bg="white")
         self.disp.place(x=240,y=330)
 
@@ -69,16 +101,19 @@ class produindi(Toplevel):
         self.bot2.config(text="Aceptar", command=self.conf)
         self.nom.config(state="normal")
         self.clas.config(state="readonly")
-        self.precio.config(state="normal")
+        self.cost.config(state="normal")
 
     def conf(self):
-        modprodu(self.id,self.nom.get(),self.clas.get(),self.precio.get())
-        self.regre()
+        res=messagebox.askquestion("Confirmación","¿Desea modificar este producto?")
+        if res == "yes":
+            modprodu(self.id,self.nom.get(),self.clas.get(),self.cost.get())
+            messagebox.showinfo("Operación Exitosa","El producto se ha modificado correctamente")
+            self.regre()
 
     def cancelar(self):
         self.nom.config(state="disabled")
         self.clas.config(state="disabled")
-        self.precio.config(state="disabled")
+        self.cost.config(state="disabled")
         self.bot1.config(text="Regresar",command=self.regre)
         self.bot2.config(text="Modificar", command=self.mod)
 

@@ -4,7 +4,7 @@ from tkinter import messagebox
 from functools import partial
 from scroll import ScrollableFrame
 from framemod import framemod
-from sql import produforventa, proceventa,getidcliet, movventa
+from sql import produforventa, proceventa,getidcliet, movventa, checkprodu, checkcant,retiitem
 from scliente import bcliente
 from procepago import metodop
 from tkinter import Widget
@@ -45,7 +45,7 @@ class venta(Tk):
         self.spin = Spinbox(self.frameb, from_=0,to=10000, width=7)
         self.spin.place(x=150,y=205)
 
-        self.agre = Button(self.frameb,text="Agregar",command=self.fill)
+        self.agre = Button(self.frameb,text="Agregar",command=self.val)
         self.agre.place(x=150,y=255)
 
         self.regr = Button(self.frameb,text="Regresar al\n menu anterior", width=25,height=3, command=self.regre)
@@ -72,6 +72,36 @@ class venta(Tk):
 
         self.mainloop()
 
+        
+    def val(self):
+        if self.cod.get()=="":
+            messagebox.showerror("Error","Ingrese un código de barras")
+            self.cod.delete(0,END)
+            self.spin.delete(0,END)
+        elif len(self.cod.get()) < 7:
+            messagebox.showerror("Error","El codigo debe tener un total de 13 dígitos")
+            self.cod.delete(0,END)
+            self.spin.delete(0,END)
+        elif not self.cod.get().isdigit():
+            messagebox.showerror("Error","El codigo solo puede tener números")
+            self.cod.delete(0,END)
+            self.spin.delete(0,END)
+        elif not self.spin.get().isdigit():
+            messagebox.showerror("Error","Ingrese una cantidad valida de elementos")
+            self.cod.delete(0,END)
+            self.spin.delete(0,END)
+        elif not checkprodu(self.cod.get()):
+            messagebox.showerror("Error","El item no se ha encontrado")
+            self.cod.delete(0,END)
+            self.spin.delete(0,END)
+        elif checkcant(self.cod.get())<int(self.spin.get()):
+            messagebox.showerror("Error","El item no posee suficientes elementos")
+            self.cod.delete(0,END)
+            self.spin.delete(0,END)
+        else:
+            self.fill()
+            
+            
         
 
     def fill(self):
@@ -115,7 +145,9 @@ class venta(Tk):
         self.ciclient= ci
 
     def regre(self):
-        self.destroy()
+        ans=messagebox.askquestion("Confirmación","¿Estas seguro que deseas abandonar la ventana?")
+        if ans== "yes":
+            self.destroy()
 
     def reiniciar(self):
         ans=messagebox.askquestion("Confirmación","¿Estas seguro que deseas reiniciar el proceso?")
@@ -139,10 +171,12 @@ class venta(Tk):
 
     def final(self,met):
         # NOTA: CAMBIAR EL ID DEL EMPLEADO CUANDO ESTE COMPLETO LOS MENUS
-        factura=proceventa(4,getidcliet(self.ciclient),met,self.sum)
+        idemp=4
+        factura=proceventa(idemp,getidcliet(self.ciclient),met,self.sum)
         j=0
         for i in self.item:
             movventa(i.id,factura,self.cantidad[j])
+            retiitem(i.id,self.cantidad[j])
             j+=1
         
         messagebox.showinfo("Compra exitosa","La compra se ha procesado correctamente")    

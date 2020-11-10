@@ -1,6 +1,7 @@
 from tkinter import *
-from sql import infoclient,modclient
+from sql import infoclient,modclient,scliente
 from entryplaceholder import entryplaceholder
+from tkinter import messagebox
 
 
 class clientindi(Toplevel):
@@ -47,6 +48,32 @@ class clientindi(Toplevel):
         self.bot2.place(x=300,y=550) 
 
 
+    def val(self):
+        if self.nom.get() == "" or self.ci.get() =="" or self.dire.get("1.0",END)=="":
+            messagebox.showerror("Error","Uno o más campos estan vacio")
+            self.ini()
+        elif len(self.nom.get()) < 5:
+            messagebox.showerror("Error","El nombre es demasiado corto")
+            self.ini()
+        elif len(self.ci.get()) < 7:
+            messagebox.showerror("Error","La cedula no es lo suficientemente larga(minimo de 7 digitos")
+            self.ini()
+        elif not self.ci.get().isdigit():
+            messagebox.showerror("Error","Solo se pueden ingresar valores numericos en el campo cedula")
+            self.ini()
+        elif len(self.dire.get("1.0", END))< 15:
+             messagebox.showerror("Error","La dirección es demasiado corta")
+             self.ini()
+        elif scliente(self.ci.get()):
+            messagebox.showerror("Error","La cedula ya se encuentra registrada en el sistem")
+            self.ini()
+        else:
+            self.conf()
+
+    def ini(self):
+        self.nom.delete(0, END)
+        self.ci.delete(0, END)
+        self.dire.delete("1.0", END)
 
     def data(self,datos):
         self.nom = entryplaceholder(self.frameb, placeholder=datos.nomb_cliente)
@@ -65,13 +92,16 @@ class clientindi(Toplevel):
 
     def mod(self):
         self.bot1.config(text="Cancelar", command=self.cancelar)
-        self.bot2.config(text="Aceptar", command=self.conf)
+        self.bot2.config(text="Aceptar", command=self.val)
         self.nom.config(state="normal")
         self.ci.config(state="normal")
 
     def conf(self):
-        modclient(self.idc,self.nom.get(),self.ci.get(),self.dire.get("1.0",END))
-        self.regre()
+        res=messagebox.askquestion("Confirmación","¿Desea modificar los datos de este cliente?")
+        if res == "yes":
+            modclient(self.idc,self.nom.get(),self.ci.get(),self.dire.get("1.0",END))
+            messagebox.showinfo("Operación exitosa","El registro se ha modificado exitosamente")
+            self.regre()
  
     def cancelar(self):
         self.nom.config(state="disabled")

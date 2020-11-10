@@ -10,6 +10,25 @@ def run():
     # additem(123456123,"Coca-cola 2l",datetime.now(),9)
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Acciones para la tabla de empleados
 
 
@@ -78,6 +97,43 @@ def login(user,passw):
         print("contraseña incorrecta")
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Acciones de la tabla productos e items
 
 
@@ -144,12 +200,12 @@ def sitem(tipo,consu):
     if tipo =="Código":
         for item in config.con.query(items).filter(items.Codigo_items.like(search)).all():
             produ = config.con.query(producto).filter_by(id_producto=item.id_producto).first()
-            lista2=  [item.Codigo_items, produ.Nomb_producto,item.cantidad]
+            lista2=  [item.Codigo_items, produ.Nomb_producto,item.cantidad,item.estado]
             lista.append(lista2)
     if tipo == "Nombre":
         for produ in config.con.query(producto).filter(producto.Nomb_producto.like(search)).all():
             for item in config.con.query(items).filter_by(id_producto=produ.id_producto).all():
-                lista2= [item.Codigo_items, produ.Nomb_producto,item.cantidad]
+                lista2= [item.Codigo_items, produ.Nomb_producto,item.cantidad,item.estado]
                 lista.append(lista2)
     return lista
 
@@ -179,8 +235,47 @@ def produforventa(codenv):
     produ = config.con.query(producto).filter_by(id_producto=data.id_producto).first()
     lista = [produ.Nomb_producto,produ.precio,data.cantidad]
     return lista 
-# def restprodu(id,cant):
-#     produ=config.con.query(producto).filter_by()
+    
+
+def retiitem(id,cant):
+    it = config.con.query(items).filter_by(Codigo_items=id)
+    produ=config.con.query(producto).filter_by(id_producto=it.id_producto)
+    produ.cantidad-= cant
+    config.con.commit()
+
+def checkproduct(nom):
+    bus = config.con.query(producto).filter_by(Nomb_producto=nom).count()
+    if bus <= 0:
+        return False
+    else:
+        return True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -247,6 +342,37 @@ def modclient(id,nomb,ci,dire):
     cli.direccion = dire
     config.con.commit()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Termina de procesar una venta
 def proceventa(ide,idc,met,mont):
     nuevo = ventas(ide,idc,met,mont)
@@ -276,6 +402,19 @@ def movventa(cod,factu,cant):
         nuevo = movitems(it.id_producto,factu,0,"Venta",cant)
         config.con.add(nuevo)
         config.con.commit()
+
+
+def checkprodu(cod):
+    bus = config.con.query(items).filter_by(Codigo_items=cod).count()
+    if bus <= 0:
+        return False
+    else:
+        return True
+    
+def checkcant(cod):
+    it= config.con.query(items).filter_by(Codigo_items=cod).first()
+    produ = config.con.query(producto).filter_by(id_producto=it.id_producto).first()
+    return produ.disponibilidad
 
 def allventa():
     lista = []
@@ -315,6 +454,7 @@ def sventa(tipo,consu):
            lista2=[ven.nfactura,emp.ci_empleado,cli.ci_cliente,ven.tipopago,ven.monto]
            lista.append(lista2)
     return lista
+
 
 def allmov():
     lista = []
@@ -374,6 +514,8 @@ def sope(tipo,consu):
            lista2=[ope.id_ope,emp.ci_empleado,ope.descripcion,ope.hora_ope]
            lista.append(lista2)
     return lista
+
+    
 
         
 

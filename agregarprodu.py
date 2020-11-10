@@ -1,7 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import messagebox
-from sql import newproduct
+from sql import newproduct,checkproduct
 
 
 class agregarprodu(Toplevel):
@@ -39,17 +39,46 @@ class agregarprodu(Toplevel):
         self.bot1 = Button(self.frameb, text="Regresar", command=self.regre)
         self.bot1.place(x=150,y=320)
 
-        self.bot2 = Button(self.frameb, text="Aceptar", command=self.nuevo)
+        self.bot2 = Button(self.frameb, text="Aceptar", command=self.val)
         self.bot2.place(x=310,y=320)
-        
 
+    def val(self):
+        if self.nom.get() == "" or self.cost.get() =="":
+            messagebox.showerror("Error","Uno o más campos estan vacio")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        elif len(self.nom.get()) < 5:
+            messagebox.showerror("Error","El nombre es demasiado corto")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        elif not self.es_flotante(self.cost.get()):
+            messagebox.showerror("Error","Solo se pueden ingresar valores numericos en el precio")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        elif float(self.cost.get()) <= 0:
+            messagebox.showerror("Error","El precio no puede ser igual o menor a cero")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        elif checkproduct(self.nom.get()):
+            messagebox.showerror("Error","El nombre del producto ya se encuentra registrado")
+            self.nom.delete(0, END)
+            self.cost.delete(0, END)
+        else:
+            self.nuevo()
 
-        
+    def es_flotante(self,variable):
+        try:
+            float(variable)
+            return True
+        except:
+            return False
 
     def nuevo(self):
-        newproduct(self.nom.get(),float(self.cost.get()),self.comb.get())
-        messagebox.showinfo("Operación Exitosa","El producto se ha creado correctamente")
-        self.regre()
+        res=messagebox.askquestion("Confirmación","¿Desea ingresar este producto al sistema?")
+        if res == "yes":
+            newproduct(self.nom.get(),float(self.cost.get()),self.comb.get())
+            messagebox.showinfo("Operación Exitosa","El producto se ha creado correctamente")
+            self.regre()
 
     def regre(self):
         self.destroy()

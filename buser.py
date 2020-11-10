@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk,messagebox
 from sql import alluser, suser
 from scroll import ScrollableFrame
 from framemod import framemod
@@ -28,6 +28,7 @@ class buser(Tk):
         self.comb= ttk.Combobox(self.frameb, width=25,height=10,state="readonly")
         self.comb.place(x=150,y=25)
         self.comb["values"] = ["Cedula","Nombre","ID"]
+        self.comb.set("Cedula")
         
         
         self.lab2= Label(self.frameb, text="Buscar:",bg="white",font=("Verdana",12))
@@ -39,7 +40,7 @@ class buser(Tk):
         self.rellenar(alluser())
         
         
-        self.bot = Button(self.frameb, width=10,height=1,text= "Aceptar", command= self.buscar)
+        self.bot = Button(self.frameb, width=10,height=1,text= "Aceptar", command= self.val)
         self.bot.place(x=640,y=25)
 
        
@@ -75,12 +76,24 @@ class buser(Tk):
                 self.priv.config(bg="#C40233")
             i+=1
 
+    def val(self):
+        if self.text.get() == "":
+            messagebox.showerror("Error","Ingrese un valor para realizar la busqueda")
+            self.text.delete(0,END)
+        else: 
+            self.buscar()
+
     def buscar(self):
         quer=suser(self.comb.get(),self.text.get())
+        self.text.delete(0,END)
         for i in self.marco:
-            i.pack_forget()
-            i.destroy()
-        self.rellenar(quer)
+                i.pack_forget()
+                i.destroy()
+        if len(quer)<1:
+            messagebox.showerror("Error","No se han encontrado relaciones, intente otra vez") 
+        else:
+            messagebox.showinfo("Busqueda exitosa","Se ha encontrado " +str(len(quer))+" registros")
+            self.rellenar(quer)
 
     def allinfo(self,event):
         caller= event.widget

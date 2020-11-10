@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk,messagebox
 from scroll import ScrollableFrame
 from framemod import framemod
 from sql import allitem, sitem, allprodu, sprodu
@@ -29,6 +29,7 @@ class inventario(Tk):
         self.comb= ttk.Combobox(self.frameb, width=25,height=10,state="readonly")
         self.comb.place(x=150,y=25)
         self.comb["values"] = ["Nombre","Código"]
+        self.comb.set("Nombre")
         
         
         self.lab2= Label(self.frameb, text="Buscar:",bg="white",font=("Verdana",12))
@@ -39,7 +40,7 @@ class inventario(Tk):
 
         
         
-        self.bot = Button(self.frameb, width=10,height=1,text= "Aceptar", command=self.buscari)
+        self.bot = Button(self.frameb, width=10,height=1,text= "Aceptar", command=self.vali)
         self.bot.place(x=640,y=25)
 
         self.bot2 = Button(self.frameb,text="Listado de productos",command=self.lprodu)
@@ -100,20 +101,44 @@ class inventario(Tk):
                 self.clas.config(bg="#C40233")
             i+=1
 
+    def vali(self):
+        if self.text.get() == "":
+            messagebox.showerror("Error","Ingrese un valor para realizar la busqueda")
+            self.text.delete(0,END)
+        else: 
+            self.buscari()
+    
+    def valp(self):
+        if self.text.get() == "":
+            messagebox.showerror("Error","Ingrese un valor para realizar la busqueda")
+            self.text.delete(0,END)
+        else: 
+            self.buscarp()
+
 
     def buscari(self):
         quer=sitem(self.comb.get(),self.text.get())
+        self.text.delete(0,END)
         for i in self.marco:
-            i.pack_forget()
-            i.destroy()
-        self.rellenar(quer)
+                i.pack_forget()
+                i.destroy()
+        if len(quer)<1:
+            messagebox.showerror("Error","No se han encontrado relaciones, intente otra vez") 
+        else:
+            messagebox.showinfo("Busqueda exitosa","Se ha encontrado " +str(len(quer))+" registros")
+            self.rellenar(quer)
     
     def buscarp(self):
         quer=sprodu(self.comb.get(),self.text.get())
+        self.text.delete(0,END)
         for i in self.marco:
-            i.pack_forget()
-            i.destroy()
-        self.rellenarp(quer)
+                i.pack_forget()
+                i.destroy()
+        if len(quer)<1:
+            messagebox.showerror("Error","No se han encontrado relaciones, intente otra vez") 
+        else:
+            messagebox.showinfo("Busqueda exitosa","Se ha encontrado " +str(len(quer))+" registros")
+            self.rellenarp(quer)
 
     def lprodu(self):
         for i in self.marco:
@@ -121,8 +146,9 @@ class inventario(Tk):
             i.destroy()
         self.rellenarp(allprodu())
         self.comb["values"] = ["Nombre","ID","Clasificación"]
+        self.comb.set("Nombre")
         self.bot2.config(command=self.litem,text="Listado de items")
-        self.bot.config(command=self.buscarp)
+        self.bot.config(command=self.valp)
 
     def litem(self):
         for i in self.marco:
@@ -130,8 +156,9 @@ class inventario(Tk):
             i.destroy()
         self.rellenar(allitem())
         self.comb["values"] = ["Nombre","Código"]
+        self.comb.set("Nombre")
         self.bot2.config(command=self.lprodu,text="Listado de productos") 
-        self.bot.config(command=self.buscari)
+        self.bot.config(command=self.vali)
 
     def iteminfo(self,event):
         caller= event.widget

@@ -1,5 +1,5 @@
 from tkinter import *
-from tkinter import ttk
+from tkinter import ttk,messagebox
 from scroll import ScrollableFrame
 from framemod import framemod
 from sql import allventa, sventa, allmov, smov, allope, sope
@@ -29,6 +29,7 @@ class leventos(Tk):
         self.comb= ttk.Combobox(self.frameb, width=25,height=10,state="readonly")
         self.comb.place(x=150,y=25)
         self.comb["values"] = ["CI Cliente","CI Empleado","N° de Factura","Metodo"]
+        self.comb.set("CI Cliente")
         
         
         self.lab2= Label(self.frameb, text="Buscar:",bg="white",font=("Verdana",12))
@@ -39,7 +40,7 @@ class leventos(Tk):
 
         
         
-        self.bot = Button(self.frameb, width=10,height=1,text= "Aceptar", command=self.buscarv)
+        self.bot = Button(self.frameb, width=10,height=1,text= "Aceptar", command=self.valv)
         self.bot.place(x=640,y=25)
 
         self.bot2 = Button(self.frameb,text="Movimiento de items",command=self.lmov)
@@ -135,27 +136,63 @@ class leventos(Tk):
                 self.hora.config(bg="#C40233")
             i+=1
 
+    def valv(self):
+        if self.text.get() == "":
+            messagebox.showerror("Error","Ingrese un valor para realizar la busqueda")
+            self.text.delete(0,END)
+        else: 
+            self.buscarv()
+
+    def valm(self):
+        if self.text.get() == "":
+            messagebox.showerror("Error","Ingrese un valor para realizar la busqueda")
+            self.text.delete(0,END)
+        else: 
+            self.buscarm()
+
+    def valo(self):
+        if self.text.get() == "":
+            messagebox.showerror("Error","Ingrese un valor para realizar la busqueda")
+            self.text.delete(0,END)
+        else: 
+            self.buscaro()
+
 
     def buscarv(self):
         quer=sventa(self.comb.get(),self.text.get())
+        self.text.delete(0,END)
         for i in self.marco:
-            i.pack_forget()
-            i.destroy()
-        self.rellenar(quer)
+                i.pack_forget()
+                i.destroy()
+        if len(quer)<1:
+            messagebox.showerror("Error","No se han encontrado relaciones, intente otra vez") 
+        else:
+            messagebox.showinfo("Busqueda exitosa","Se ha encontrado " +str(len(quer))+" registros")
+            self.rellenar(quer)
     
     def buscarm(self):
         quer=smov(self.comb.get(),self.text.get())
+        self.text.delete(0,END)
         for i in self.marco:
-            i.pack_forget()
-            i.destroy()
-        self.rellenarm(quer)
+                i.pack_forget()
+                i.destroy()
+        if len(quer)<1:
+            messagebox.showerror("Error","No se han encontrado relaciones, intente otra vez") 
+        else:
+            messagebox.showinfo("Busqueda exitosa","Se ha encontrado " +str(len(quer))+" registros")
+            self.rellenarm(quer)
 
     def buscaro(self):
         quer=sope(self.comb.get(),self.text.get())
+        self.text.delete(0,END)
         for i in self.marco:
-            i.pack_forget()
-            i.destroy()
-        self.rellenaro(quer)
+                i.pack_forget()
+                i.destroy()
+        if len(quer)<1:
+            messagebox.showerror("Error","No se han encontrado relaciones, intente otra vez") 
+        else:
+            messagebox.showinfo("Busqueda exitosa","Se ha encontrado " +str(len(quer))+" registros")
+            self.rellenaro(quer)
 
     def lmov(self):
         for i in self.marco:
@@ -163,10 +200,11 @@ class leventos(Tk):
             i.destroy()
         self.rellenarm(allmov())
         self.comb["values"] = ["ID","Nombre de producto","Acción"]
+        self.comb.set("ID")
         self.bot2.config(state="disabled")
         self.bot3.config(state="normal")
         self.bot4.config(state="normal")
-        self.bot.config(command=self.buscarm)
+        self.bot.config(command=self.valm)
 
     def lventa(self):
         for i in self.marco:
@@ -174,10 +212,11 @@ class leventos(Tk):
             i.destroy()
         self.rellenar(allventa())
         self.comb["values"] = ["CI Cliente","CI Empleado","N° de Factura","Metodo"]
+        self.comb.set("CI Cliente")
         self.bot4.config(state="disabled")
         self.bot2.config(state="normal")
         self.bot3.config(state="normal")
-        self.bot.config(command=self.buscarv)
+        self.bot.config(command=self.valv)
 
     def lope(self):
         for i in self.marco:
@@ -185,10 +224,11 @@ class leventos(Tk):
             i.destroy()
         self.rellenaro(allope())
         self.comb["values"] = ["ID","CI Empleado","Descripción"]
+        self.comb.set("ID")
         self.bot4.config(state="normal")
         self.bot2.config(state="normal")
         self.bot3.config(state="disabled")
-        self.bot.config(command=self.buscaro)
+        self.bot.config(command=self.valo)
 
 
 
