@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 08-11-2020 a las 02:18:13
+-- Tiempo de generación: 10-11-2020 a las 23:38:08
 -- Versión del servidor: 10.4.14-MariaDB
 -- Versión de PHP: 7.4.10
 
@@ -43,7 +43,8 @@ INSERT INTO `clientes` (`id_cliente`, `ci_cliente`, `nomb_cliente`, `numbcompras
 (1, 123456, 'daniel', 0, 'La limpia dr Portillo\n'),
 (2, 5689997, 'Luis Ortega', 0, 'Caracas\n'),
 (3, 369888, 'Felipe', 0, 'adasdasasdasdadsa\n'),
-(4, 69669669, 'Gonzalo Fernandez', 0, '\n');
+(4, 69669669, 'Gonzalo Fernandez', 1, '\n'),
+(5, 5665656, 'Daniel Phillips', 1, 'New york av california\n');
 
 -- --------------------------------------------------------
 
@@ -67,7 +68,7 @@ CREATE TABLE `empleados` (
 --
 
 INSERT INTO `empleados` (`id_empleado`, `ci_empleado`, `nomb_empleado`, `privilegios`, `numventas`, `Fecha_registro`, `Fecha_ultima_sesion`, `contraseña`) VALUES
-(4, 335689, 'lusi', 'normal', 0, '2020-11-04 19:47:58', '2020-11-04 19:47:58', '321');
+(4, 335689, 'lusi', 'normal', 2, '2020-11-04 19:47:58', '2020-11-04 19:47:58', '321');
 
 -- --------------------------------------------------------
 
@@ -76,7 +77,7 @@ INSERT INTO `empleados` (`id_empleado`, `ci_empleado`, `nomb_empleado`, `privile
 --
 
 CREATE TABLE `items` (
-  `Codigo_items` int(11) NOT NULL,
+  `Codigo_items` bigint(13) NOT NULL,
   `id_producto` int(11) NOT NULL,
   `fecha_registro` datetime NOT NULL,
   `fecha_expedicion` datetime NOT NULL,
@@ -91,7 +92,10 @@ CREATE TABLE `items` (
 INSERT INTO `items` (`Codigo_items`, `id_producto`, `fecha_registro`, `fecha_expedicion`, `estado`, `cantidad`) VALUES
 (6565656, 1, '2020-10-27 22:38:47', '2020-10-31 00:00:00', 'disponible', 8),
 (123456123, 2, '2020-10-27 20:14:12', '0000-00-00 00:00:00', '9', 1),
-(565689897, 3, '2020-11-07 17:52:34', '2021-02-26 00:00:00', 'disponible', 32);
+(565689897, 3, '2020-11-07 17:52:34', '2021-02-26 00:00:00', 'disponible', 32),
+(2147483647, 3, '2020-11-09 23:34:31', '2020-11-13 00:00:00', 'disponible', 2),
+(1234567891234, 1, '2020-11-09 23:48:57', '2020-11-11 00:00:00', 'disponible', 5),
+(9876543219876, 2, '2020-11-09 23:56:41', '2020-11-20 00:00:00', 'disponible', 9);
 
 --
 -- Disparadores `items`
@@ -133,7 +137,12 @@ INSERT INTO `movitems` (`idmov`, `id_producto`, `n_factura`, `id_ope`, `accion`,
 (2, 2, 5, 0, 'Venta', 55),
 (3, 2, 3, 0, 'Venta', 3),
 (4, 2, 3, 0, 'Venta', 2),
-(5, 3, 0, 1, 'Ingreso', 32);
+(5, 3, 0, 1, 'Ingreso', 32),
+(6, 3, 4, 0, 'Venta', 2),
+(7, 3, 4, 0, 'Venta', 5),
+(8, 3, 5, 0, 'Venta', 2),
+(9, 1, 0, 3, 'Ingreso', 5),
+(10, 2, 0, 4, 'Ingreso', 9);
 
 -- --------------------------------------------------------
 
@@ -153,7 +162,10 @@ CREATE TABLE `opeinventario` (
 --
 
 INSERT INTO `opeinventario` (`id_ope`, `id_empleado`, `descripcion`, `hora_ope`) VALUES
-(1, 4, 'Registro de item', '2020-11-07 17:52:36');
+(1, 4, 'Registro de item', '2020-11-07 17:52:36'),
+(2, 4, 'Registro de item', '2020-11-09 23:34:31'),
+(3, 4, 'Registro de item', '2020-11-09 23:48:57'),
+(4, 4, 'Registro de item', '2020-11-09 23:56:41');
 
 -- --------------------------------------------------------
 
@@ -174,9 +186,11 @@ CREATE TABLE `producto` (
 --
 
 INSERT INTO `producto` (`id_producto`, `Nomb_producto`, `disponibilidad`, `precio`, `Clasificacion`) VALUES
-(1, 'Pepsi 1.5L', 25, 0, 'Snacks'),
-(2, 'Mayonesa Mavesa 250Ml', 0, 12.5, 'Salsas y encurtidos'),
-(3, 'Helado EFE chocolate intenso', 32, 50, 'Refrigerados');
+(1, 'Pepsi 1.5L', 30, 0, 'Snacks'),
+(2, 'Mayonesa Mavesa 250Ml', 9, 12.5, 'Salsas y encurtidos'),
+(3, 'Helado EFE chocolate intenso', 34, 50, 'Refrigerados'),
+(4, 'Caja kellogs 350gr', 0, 35.5, 'Snacks'),
+(5, 'Zucaritas 350gr', 0, 35.5, 'Snacks');
 
 -- --------------------------------------------------------
 
@@ -199,7 +213,9 @@ CREATE TABLE `ventas` (
 INSERT INTO `ventas` (`nfactura`, `id_empleado`, `id_cliente`, `tipopago`, `monto`) VALUES
 (1, 4, 1, 'Debito', 25),
 (2, 4, 1, 'Debito', 50),
-(3, 4, 1, 'Debito', 62.5);
+(3, 4, 1, 'Debito', 62.5),
+(4, 4, 5, 'Debito', 350),
+(5, 4, 4, 'Efectivo', 100);
 
 --
 -- Índices para tablas volcadas
@@ -224,7 +240,7 @@ ALTER TABLE `empleados`
 -- Indices de la tabla `items`
 --
 ALTER TABLE `items`
-  ADD PRIMARY KEY (`Codigo_items`);
+  ADD PRIMARY KEY (`Codigo_items`) USING BTREE;
 
 --
 -- Indices de la tabla `movitems`
@@ -258,7 +274,7 @@ ALTER TABLE `ventas`
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `empleados`
@@ -270,25 +286,25 @@ ALTER TABLE `empleados`
 -- AUTO_INCREMENT de la tabla `movitems`
 --
 ALTER TABLE `movitems`
-  MODIFY `idmov` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `idmov` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `opeinventario`
 --
 ALTER TABLE `opeinventario`
-  MODIFY `id_ope` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_ope` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `producto`
 --
 ALTER TABLE `producto`
-  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_producto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `ventas`
 --
 ALTER TABLE `ventas`
-  MODIFY `nfactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `nfactura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

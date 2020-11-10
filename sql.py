@@ -236,13 +236,14 @@ def produforventa(codenv):
     lista = [produ.Nomb_producto,produ.precio,data.cantidad]
     return lista 
     
-
+# Se retira una cantidad de productos de la bdd
 def retiitem(id,cant):
     it = config.con.query(items).filter_by(Codigo_items=id)
     produ=config.con.query(producto).filter_by(id_producto=it.id_producto)
     produ.cantidad-= cant
     config.con.commit()
 
+# Chequea si el producto ya existe
 def checkproduct(nom):
     bus = config.con.query(producto).filter_by(Nomb_producto=nom).count()
     if bus <= 0:
@@ -335,6 +336,7 @@ def infoclient(idc):
     data = config.con.query(clientes).filter_by(id_cliente=idc).first()
     return data
 
+# Modifica la info de un cliente
 def modclient(id,nomb,ci,dire):
     cli = config.con.query(clientes).get(id)
     cli.nomb_cliente= nomb
@@ -384,12 +386,14 @@ def proceventa(ide,idc,met,mont):
     config.con.commit()
     return nuevo.nfactura
 
+# Registra una operacion en la bdd
 def regiope(ide,accion):
     nuevo = opeinventario(ide,accion,datetime.now())
     config.con.add(nuevo)
     config.con.commit()
     return nuevo.id_ope
 
+# Registra un movimiento de items en el inventario
 def movinv(cod,idop,accion,cant):
     it=config.con.query(items).filter_by(Codigo_items=cod).first()
     nuevo = movitems(it.id_producto,0,idop,accion,cant)
@@ -403,19 +407,21 @@ def movventa(cod,factu,cant):
         config.con.add(nuevo)
         config.con.commit()
 
-
+# Chequea que el item exista
 def checkprodu(cod):
     bus = config.con.query(items).filter_by(Codigo_items=cod).count()
     if bus <= 0:
         return False
     else:
         return True
-    
+
+# Chequea la disponibilidad de un producto  
 def checkcant(cod):
     it= config.con.query(items).filter_by(Codigo_items=cod).first()
     produ = config.con.query(producto).filter_by(id_producto=it.id_producto).first()
     return produ.disponibilidad
 
+# Muestra todas las ventas para la tabla
 def allventa():
     lista = []
     data = config.con.query(ventas).all()
@@ -426,6 +432,7 @@ def allventa():
         lista.append(lista2)
     return lista
 
+# Realiza la busqueda de ventas
 def sventa(tipo,consu):
     search= "%{}%".format(consu)
     lista=[]
@@ -455,7 +462,7 @@ def sventa(tipo,consu):
            lista.append(lista2)
     return lista
 
-
+# Busca todos los mov de items para la tabla
 def allmov():
     lista = []
     data= config.con.query(movitems).all()
@@ -465,6 +472,7 @@ def allmov():
         lista.append(lista2)
     return lista
 
+# Busca un movimiento
 def smov(tipo,consu):
     search= "%{}%".format(consu)
     lista=[]
@@ -485,7 +493,7 @@ def smov(tipo,consu):
             lista.append(lista2)
     return lista
 
-
+# muestra todas las operaciones del inventario para la tabla
 def allope():
     lista = []
     data = config.con.query(opeinventario).all()
@@ -495,6 +503,7 @@ def allope():
         lista.append(lista2)
     return lista
 
+# Busca una operacion
 def sope(tipo,consu):
     search= "%{}%".format(consu)
     lista=[]
