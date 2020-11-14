@@ -5,6 +5,8 @@ from framemod import framemod
 from sql import allitem, sitem, allprodu, sprodu
 from itemindi import itemindi
 from produindi import produindi
+from reporte1 import export_to_pdf
+from datetime import datetime,date
 
 class inventario(Tk):
     def __init__(self, *args, **kwargs):
@@ -49,6 +51,9 @@ class inventario(Tk):
         self.bot3 = Button(self.frameb,text="Regresar")
         self.bot3.place(x=25,y=500)
 
+        self.bot4 = Button(self.frameb,text="Realizar reporte", command=self.reporti)
+        self.bot4.place(x=150,y=500)
+
         self.rellenar(allitem())
 
         
@@ -56,6 +61,7 @@ class inventario(Tk):
         self.mainloop()
 
     def rellenar(self,lista):
+        self.reportdata=lista
         self.marco=[]
         i=0
         for item in lista:
@@ -80,6 +86,7 @@ class inventario(Tk):
 
     def rellenarp(self,lista):
         self.marco=[]
+        self.reportdata=lista
         i=0
         for item in lista:
             self.marco.append(framemod(self.framet.scrollable_frame, item[0],width=750, height=60, bg="#DB7093"))
@@ -149,6 +156,7 @@ class inventario(Tk):
         self.comb.set("Nombre")
         self.bot2.config(command=self.litem,text="Listado de items")
         self.bot.config(command=self.valp)
+        self.bot4.config(command=self.reportp)
 
     def litem(self):
         for i in self.marco:
@@ -159,6 +167,7 @@ class inventario(Tk):
         self.comb.set("Nombre")
         self.bot2.config(command=self.lprodu,text="Listado de productos") 
         self.bot.config(command=self.vali)
+        self.bot4.config(command=self.reporti)
 
     def iteminfo(self,event):
         caller= event.widget
@@ -181,6 +190,28 @@ class inventario(Tk):
             i.pack_forget()
             i.destroy()
         self.rellenarp(allprodu())
+
+    def reportp(self):
+        res=messagebox.askquestion("Confirmación","¿Estas seguro que deseas guardar un reporte de los elementos seleccionados?")
+        if res == "yes":
+            self.prodreport=[["ID","Nombre","disponibilidad","Clasificación","Precio(Bs.S)"]]
+            for p in self.reportdata:
+                self.prodreport.append(p)
+            now=datetime.now()
+            titulo="Reporte de productos "+str(date.today()) +"  "+ str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".pdf"
+            export_to_pdf(4,titulo,"Clientes",self.prodreport)
+            messagebox.showinfo("Operación Exitosa","El reporte se ha generado exitosamente")
+
+    def reporti(self):
+        res=messagebox.askquestion("Confirmación","¿Estas seguro que deseas guardar un reporte de los elementos seleccionados?")
+        if res == "yes":
+            self.itreport=[["Código","Producto","Cant registrada","Estado","F. registro","F. expedición"]]
+            for p in self.reportdata:
+                self.itreport.append(p)
+            now=datetime.now()
+            titulo="Reporte de clientes "+str(date.today()) +"  "+ str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".pdf"
+            export_to_pdf(4,titulo,"Clientes",self.itreport)
+            messagebox.showinfo("Operación Exitosa","El reporte se ha generado exitosamente")
 
 
 

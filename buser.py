@@ -4,6 +4,8 @@ from sql import alluser, suser
 from scroll import ScrollableFrame
 from framemod import framemod
 from userindi import userindi
+from reporte1 import export_to_pdf
+from datetime import datetime,date
 
 class buser(Tk):
     def __init__(self,*args, **kwargs):
@@ -14,7 +16,7 @@ class buser(Tk):
         
         self.frameb= Frame(self)
         self.frameb.pack()
-        self.frameb.config(width=750,height=500)
+        self.frameb.config(width=750,height=550)
         self.frameb.config(bg="white")
 
 
@@ -43,6 +45,9 @@ class buser(Tk):
         self.bot = Button(self.frameb, width=10,height=1,text= "Aceptar", command= self.val)
         self.bot.place(x=640,y=25)
 
+        self.bot3 = Button(self.frameb,text="Realizar reporte", command=self.reporte)
+        self.bot3.place(x=150,y=500)
+
        
 
         
@@ -51,6 +56,7 @@ class buser(Tk):
 
     def rellenar(self,lista):
         self.marco=[]
+        self.reportdata=lista
         i=0
         for per in lista:
             self.marco.append(framemod(self.framet.scrollable_frame, per[0],width=750, height=60, bg="#DB7093"))
@@ -105,6 +111,17 @@ class buser(Tk):
             i.pack_forget()
             i.destroy()
         self.rellenar(alluser())
+
+    def reporte(self):
+        res=messagebox.askquestion("Confirmación","¿Estas seguro que deseas guardar un reporte de los elementos seleccionados?")
+        if res == "yes":
+            self.empreport=[["ID","CI Empleado","Nombre","Privilegios","N° de ventas","F. de registro"]]
+            for e in self.reportdata:
+                self.empreport.append(e)
+            now=datetime.now()
+            titulo="Reporte de empleados "+str(date.today()) +"  "+ str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".pdf"
+            export_to_pdf(4,titulo,"Clientes",self.empreport)
+            messagebox.showinfo("Operación Exitosa","El reporte se ha generado exitosamente")
         
 
 

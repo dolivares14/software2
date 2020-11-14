@@ -5,6 +5,8 @@ from framemod import framemod
 from sql import allventa, sventa, allmov, smov, allope, sope
 from itemindi import itemindi
 from produindi import produindi
+from reporte1 import export_to_pdf
+from datetime import date, datetime
 
 class leventos(Tk):
     def __init__(self, *args, **kwargs):
@@ -52,16 +54,19 @@ class leventos(Tk):
         self.bot4 = Button(self.frameb,text="Ventas realizadas",command=self.lventa,state="disabled")
         self.bot4.place(x=265,y=500)
 
+        self.bot6 = Button(self.frameb,text="Realizar reporte", command=self.reportv)
+        self.bot6.place(x=150,y=500)
+
         self.bot5 = Button(self.frameb,text="Regresar")
         self.bot5.place(x=25,y=500)
 
         self.rellenar(allventa())
 
-        
 
         self.mainloop()
 
     def rellenar(self,lista):
+        self.reportdata=lista
         self.marco=[]
         i=0
         for vent in lista:
@@ -87,6 +92,7 @@ class leventos(Tk):
             i+=1
 
     def rellenarm(self,lista):
+        self.reportdata=lista
         self.marco=[]
         i=0
         for mov in lista:
@@ -115,6 +121,7 @@ class leventos(Tk):
             i+=1
 
     def rellenaro(self,lista):
+        self.reportdata=lista
         self.marco=[]
         i=0
         for ope in lista:
@@ -204,6 +211,7 @@ class leventos(Tk):
         self.bot2.config(state="disabled")
         self.bot3.config(state="normal")
         self.bot4.config(state="normal")
+        self.bot6.config(command=self.reportm)
         self.bot.config(command=self.valm)
 
     def lventa(self):
@@ -216,6 +224,8 @@ class leventos(Tk):
         self.bot4.config(state="disabled")
         self.bot2.config(state="normal")
         self.bot3.config(state="normal")
+        self.bot6.config(command=self.reportv)
+        
         self.bot.config(command=self.valv)
 
     def lope(self):
@@ -228,8 +238,45 @@ class leventos(Tk):
         self.bot4.config(state="normal")
         self.bot2.config(state="normal")
         self.bot3.config(state="disabled")
+        self.bot6.config(command=self.reporto)
         self.bot.config(command=self.valo)
 
+    def reportv(self):
+        res=messagebox.askquestion("Confirmación","¿Estas seguro que deseas guardar un reporte de los elementos seleccionados?")
+        if res == "yes":
+            self.ventreport=[["N° de factura","CI Empleado","CI Cliente","Tipo de pago","Monto(Bs.S)"]]
+            for v in self.reportdata:
+                self.ventreport.append(v)
+            now=datetime.now()
+            titulo="Reporte de ventas "+str(date.today()) +"  "+ str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".pdf"
+            export_to_pdf(4,titulo,"Clientes",self.ventreport)
+            messagebox.showinfo("Operación Exitosa","El reporte se ha generado exitosamente")
+    
+    def reportm(self):
+        res=messagebox.askquestion("Confirmación","¿Estas seguro que deseas guardar un reporte de los elementos seleccionados?")
+        if res == "yes":
+            self.movreport=[["ID","Producto","N° de factura","ID operación","Acción","Cantidad"]]
+            for m in self.reportdata:
+                if m[2]==0:
+                    m[2]="No posee"
+                else:
+                    m[3]="No posee" 
+                self.movreport.append(m)
+            now=datetime.now()
+            titulo="Reporte de movimientos "+str(date.today()) +"  "+ str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".pdf"
+            export_to_pdf(4,titulo,"Clientes",self.movreport)
+            messagebox.showinfo("Operación Exitosa","El reporte se ha generado exitosamente")
+            
+    def reporto(self):
+        res=messagebox.askquestion("Confirmación","¿Estas seguro que deseas guardar un reporte de los elementos seleccionados?")
+        if res == "yes":
+            self.opereport=[["ID","CI Empleado","Descripción","Fecha/Hora"]]
+            for o in self.reportdata:
+                self.opereport.append(o)
+            now=datetime.now()
+            titulo="Reporte de operaciones "+str(date.today()) +"  "+ str(now.hour) + "-" + str(now.minute) + "-" + str(now.second) + ".pdf"
+            export_to_pdf(4,titulo,"Clientes",self.opereport)
+            messagebox.showinfo("Operación Exitosa","El reporte se ha generado exitosamente")
 
 
 

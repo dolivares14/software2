@@ -8,6 +8,7 @@ from sql import produforventa, proceventa,getidcliet, movventa, checkprodu, chec
 from scliente import bcliente
 from procepago import metodop
 from tkinter import Widget
+from reporte1 import gen_factura
 
 
 
@@ -68,6 +69,7 @@ class venta(Tk):
         self.i=0
         self.tota=[]
         self.cantidad=[]
+        self.facturao=[]
         
 
         self.mainloop()
@@ -108,6 +110,7 @@ class venta(Tk):
         self.item.append(framemod(self.framet.scrollable_frame, self.cod.get(),width=750, height=80, bg="white"))
         self.item[self.i].pack()
         info = produforventa(self.cod.get())
+        self.facturao.append([info[1],self.spin.get(),info[0],(float(self.spin.get())*info[1])])
         self.nompro = Label(self.item[self.i], text=info[0],bg="white")
         self.nompro.place(x=20,y=5)
         self.costi = Label(self.item[self.i], text=str(self.spin.get()) + " x Bs.S "+ str(info[1]),bg="white")
@@ -164,6 +167,7 @@ class venta(Tk):
         self.item=[]
         self.tota=[]
         self.cantidad=[]
+        self.facturao=[]
         nwin = bcliente(self)
     
     def sig(self):
@@ -172,14 +176,16 @@ class venta(Tk):
     def final(self,met):
         # NOTA: CAMBIAR EL ID DEL EMPLEADO CUANDO ESTE COMPLETO LOS MENUS
         idemp=4
-        factura=proceventa(idemp,getidcliet(self.ciclient),met,self.sum)
+        idclient=getidcliet(self.ciclient)
+        factura=proceventa(idemp,idclient,met,self.sum)
         j=0
         for i in self.item:
             movventa(i.id,factura,self.cantidad[j])
             retiitem(i.id,self.cantidad[j])
             j+=1
         
-        messagebox.showinfo("Compra exitosa","La compra se ha procesado correctamente")    
+        messagebox.showinfo("Compra exitosa","La compra se ha procesado correctamente") 
+        gen_factura(self.facturao,self.sum,factura,idclient) 
         self.ini()
 
 

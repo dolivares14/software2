@@ -36,7 +36,7 @@ def run():
 def alluser():
     lista=[]
     for emp in config.con.query(empleados).all():
-        list2=[emp.id_empleado,emp.ci_empleado,emp.nomb_empleado,emp.privilegios]
+        list2=[emp.id_empleado,emp.ci_empleado,emp.nomb_empleado,emp.privilegios,emp.numventas,emp.Fecha_registro]
         lista.append(list2)
     return lista 
 
@@ -65,16 +65,16 @@ def suser(tipo,consu):
     lista=[]
     if tipo =="Cedula":
         for emp in config.con.query(empleados).filter(empleados.ci_empleado.like(search)).all():
-           list2=[emp.id_empleado,emp.ci_empleado,emp.nomb_empleado,emp.privilegios]
+           list2=[emp.id_empleado,emp.ci_empleado,emp.nomb_empleado,emp.privilegios,emp.numventas,emp.Fecha_registro]
            lista.append(list2)
     if tipo =="Nombre":
         for emp in config.con.query(empleados).filter(empleados.nomb_empleado.like(search)).all():
-           list2=[emp.id_empleado,emp.ci_empleado,emp.nomb_empleado,emp.privilegios]
+           list2=[emp.id_empleado,emp.ci_empleado,emp.nomb_empleado,emp.privilegios,emp.numventas,emp.Fecha_registro]
            lista.append(list2)
     if tipo =="ID":
         for emp in config.con.query(empleados).filter(empleados.id_empleado.like(search)).all():
-           list2=[emp.id_empleado,emp.ci_empleado,emp.nomb_empleado,emp.privilegios]
-           lista.append(list2)
+            list2=[emp.id_empleado,emp.ci_empleado,emp.nomb_empleado,emp.privilegios,emp.numventas,emp.Fecha_registro]
+            lista.append(list2)
     return lista 
 
 # Crea un nuevo usuario
@@ -162,7 +162,7 @@ def additem(cod,nom,fecha,cant):
 def allprodu():
     lista=[]
     for prod in config.con.query(producto).all():
-        lista2=[prod.id_producto,prod.Nomb_producto,prod.disponibilidad, prod.Clasificacion]
+        lista2=[prod.id_producto,prod.Nomb_producto,prod.disponibilidad, prod.Clasificacion,prod.precio]
         lista.append(lista2)
     return lista
 
@@ -171,7 +171,7 @@ def allitem():
     lista=[]
     for item in config.con.query(items).all():
         produ = config.con.query(producto).filter_by(id_producto=item.id_producto).first()
-        lista2= [item.Codigo_items, produ.Nomb_producto,item.cantidad,item.estado]
+        lista2= [item.Codigo_items, produ.Nomb_producto,item.cantidad,item.estado,item.fecha_registro,item.fecha_expedicion]
         lista.append(lista2)
     return lista 
 
@@ -181,15 +181,15 @@ def sprodu(tipo,consu):
     lista=[]
     if tipo =="ID":
         for prod in config.con.query(producto).filter(producto.id_producto.like(search)).all():
-            lista2=  [prod.id_producto, prod.Nomb_producto,prod.disponibilidad,prod.Clasificacion]
+            lista2=  [prod.id_producto, prod.Nomb_producto,prod.disponibilidad,prod.Clasificacion,prod.precio]
             lista.append(lista2)
     if tipo == "Nombre":
         for prod in config.con.query(producto).filter(producto.Nomb_producto.like(search)).all():
-            lista2=  [prod.id_producto, prod.Nomb_producto,prod.disponibilidad,prod.Clasificacion]
+            lista2=  [prod.id_producto, prod.Nomb_producto,prod.disponibilidad,prod.Clasificacion,prod.precio]
             lista.append(lista2)
     if tipo == "Clasificación":
         for prod in config.con.query(producto).filter(producto.Clasificacion.like(search)).all():
-            lista2=  [prod.id_producto, prod.Nomb_producto,prod.disponibilidad,prod.Clasificacion]
+            lista2=  [prod.id_producto, prod.Nomb_producto,prod.disponibilidad,prod.Clasificacion,prod.precio]
             lista.append(lista2)
     return lista
 
@@ -200,12 +200,12 @@ def sitem(tipo,consu):
     if tipo =="Código":
         for item in config.con.query(items).filter(items.Codigo_items.like(search)).all():
             produ = config.con.query(producto).filter_by(id_producto=item.id_producto).first()
-            lista2=  [item.Codigo_items, produ.Nomb_producto,item.cantidad,item.estado]
+            lista2=  [item.Codigo_items, produ.Nomb_producto,item.cantidad,item.estado,item.fecha_registro,item.fecha_expedicion]
             lista.append(lista2)
     if tipo == "Nombre":
         for produ in config.con.query(producto).filter(producto.Nomb_producto.like(search)).all():
             for item in config.con.query(items).filter_by(id_producto=produ.id_producto).all():
-                lista2= [item.Codigo_items, produ.Nomb_producto,item.cantidad,item.estado]
+                lista2= [item.Codigo_items, produ.Nomb_producto,item.cantidad,item.estado,item.fecha_registro,item.fecha_expedicion]
                 lista.append(lista2)
     return lista
 
@@ -238,9 +238,9 @@ def produforventa(codenv):
     
 # Se retira una cantidad de productos de la bdd
 def retiitem(id,cant):
-    it = config.con.query(items).filter_by(Codigo_items=id)
-    produ=config.con.query(producto).filter_by(id_producto=it.id_producto)
-    produ.cantidad-= cant
+    it = config.con.query(items).filter_by(Codigo_items=id).first()
+    produ= config.con.query(producto).filter_by(id_producto=it.id_producto).first()
+    produ.disponibilidad -= int(cant)
     config.con.commit()
 
 # Chequea si el producto ya existe
@@ -312,7 +312,10 @@ def allclient():
     lista = []
     data = config.con.query(clientes).all()
     for cli in data:
-        lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras]
+        dire=str(cli.direccion)
+        temp=len(dire)
+        ndire=dire[:temp - 1]
+        lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras,ndire]
         lista.append(lista2)
     return lista
 
@@ -322,11 +325,17 @@ def qcliente(tipo,consu):
     lista=[]
     if tipo =="Cedula":
         for cli in config.con.query(clientes).filter(clientes.ci_cliente.like(search)).all():
-           lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras]
+           dire=str(cli.direccion)
+           temp=len(dire)
+           ndire=dire[:temp - 1]
+           lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras,ndire]
            lista.append(lista2)
     if tipo =="Nombre":
         for cli in config.con.query(clientes).filter(clientes.nomb_cliente.like(search)).all():
-           lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras]
+           dire=str(cli.direccion)
+           temp=len(dire)
+           ndire=dire[:temp - 1]
+           lista2=[cli.id_cliente,cli.nomb_cliente,cli.ci_cliente,cli.numbcompras,ndire]
            lista.append(lista2)
     return lista
 
